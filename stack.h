@@ -61,7 +61,9 @@ struct Stack
     {
         for ( ; ; )
         {
-            Head const old = m_head, h = {(long) obj, old.tag + 1};
+            Head const old = m_head;
+            Head h = old;
+            ++h.tag;
             obj->next = ptr (old);
             if (cas (&m_head, old, h))
                 return;
