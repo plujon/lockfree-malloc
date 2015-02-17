@@ -125,8 +125,13 @@ private:
 
     struct Head
     {
+#if __amd64__ /* a.k.a. __x86_64__ */
         long ptr : 48;
         size_t tag : 16;
+#elif __i386__
+        long ptr : 32;
+        size_t tag : 32;
+#endif
     };
 
     Head m_head;

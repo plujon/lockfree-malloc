@@ -32,7 +32,9 @@ template<> struct cas_type<sizeof(char)> { typedef char type; };
 template<> struct cas_type<sizeof(char)+1> { typedef short type; };
 template<> struct cas_type<sizeof(short)+1> { typedef int type; };
 template<> struct cas_type<sizeof(int)+1> { typedef long type; };
+#if __amd64__
 template<> struct cas_type<sizeof(long)+1> { typedef void type; };
+#endif
 
 
 template <typename T>
