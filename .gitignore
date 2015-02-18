@@ -1,0 +1,4 @@
+liblite-malloc-shared.so
+liblite-malloc-static.a
+lite-malloc-shared.o
+lite-malloc.o
