@@ -46,7 +46,7 @@
 #include "l-singleton.h"
 #include "stack.h"
 
-#ifdef __FreeBSD__
+#ifdef MAP_ANON
 #define __MAP_ANONYMOUS MAP_ANON
 #else
 #define __MAP_ANONYMOUS MAP_ANONYMOUS
