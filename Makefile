@@ -3,8 +3,8 @@
 PREFIX = /usr/local
 BOOST_INCLUDES = ${PREFIX}/include
 
-CXX = g++
-CFLAGS = -I$(BOOST_INCLUDES) -O3 -finline-functions -Wno-inline -Wall -pthread
+# CXX = g++
+CXXFLAGS = -I$(BOOST_INCLUDES) -O3 -finline-functions -Wno-inline -Wall
 LFLAGS =
 
 IDEPS = aux_.h lite-hooks-wrap.h lite-malloc.h  stack.h  u-singleton.h l-singleton.h 
@@ -12,16 +12,18 @@ IDEPS = aux_.h lite-hooks-wrap.h lite-malloc.h  stack.h  u-singleton.h l-singlet
 STATIC_LIB = liblite-malloc-static.a
 SHARED_LIB = liblite-malloc-shared.so
 
-all: $(STATIC_LIB) $(SHARED_LIB)
+litemalloc = lite-malloc.o
 
-lite-malloc.o: $(IDEPS)
-	$(CXX) $(CFLAGS) lite-malloc.cpp -fPIC -c -o lite-malloc.o
+all: $(litemalloc)
 
-$(STATIC_LIB): lite-malloc.o
+$(litemalloc): $(IDEPS)
+	$(CXX) $(CFLAGS) $(CXXFLAGS) lite-malloc.cpp -fPIC -c -o $@
+
+$(STATIC_LIB): $(litemalloc)
 	-rm -f $(STATIC_LIB)
-	ar rc $(STATIC_LIB) lite-malloc.o 
+	ar rc $(STATIC_LIB) $(litemalloc)
 
-$(SHARED_LIB): lite-malloc.o
+$(SHARED_LIB): $(litemalloc)
 	objcopy --redefine-sym __wrap_malloc=malloc \
 		--redefine-sym __wrap_free=free \
 		--redefine-sym __wrap_calloc=calloc \
@@ -29,10 +31,8 @@ $(SHARED_LIB): lite-malloc.o
 		--redefine-sym __wrap_memalign=memalign \
 		--redefine-sym __wrap_posix_memalign=posix_memalign \
 		--redefine-sym __wrap_valloc=valloc \
-		lite-malloc.o lite-malloc-shared.o
+		$(litemalloc) lite-malloc-shared.o
 	$(CXX) $(LFLAGS) lite-malloc-shared.o -shared -o $(SHARED_LIB)
 
 clean:
-	-rm -f lite-malloc.o lite-malloc-shared.o $(STATIC_LIB) $(SHARED_LIB) 
-
-
+	-rm -f $(litemalloc) lite-malloc-shared.o $(STATIC_LIB) $(SHARED_LIB)
